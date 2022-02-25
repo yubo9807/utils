@@ -1,0 +1,18 @@
+{
+  "name": "util",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "dev": "nodemon --watch src -e ts --exec tsc",
+    "build": "rm -rf dist & tsc"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/node": "^14.14.9",
+    "nodemon": "^2.0.7",
+    "typescript": "^4.5.5"
+  }
+}
