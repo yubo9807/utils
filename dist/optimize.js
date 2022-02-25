@@ -1,0 +1,90 @@
+var c = console.log;
+window.addEventListener('load', function () {
+    setTimeout(function () {
+        var timing = window.performance.timing, loadObj = {};
+        var paint = window.performance.getEntriesByType('paint');
+        loadObj['DNS查询耗时'] = timing.domainLookupEnd - timing.domainLookupStart;
+        loadObj['TCP链接耗时'] = timing.connectEnd - timing.connectStart;
+        loadObj['request耗时'] = timing.responseEnd - timing.responseStart;
+        loadObj['解析DOM树耗时'] = timing.domComplete - timing.domInteractive;
+        loadObj['白屏时间'] = timing.domLoading - timing.fetchStart;
+        loadObj['domready'] = timing.domContentLoadedEventEnd - timing.fetchStart;
+        loadObj['onload'] = timing.loadEventEnd - timing.fetchStart;
+        loadObj['首次绘制时间(FC)'] = paint[0].startTime;
+        loadObj['首次内容绘制时间(FCP)'] = paint[1].startTime;
+        window.load = loadObj;
+    }, 0);
+});
+// 采集JS Error
+window.onerror = function (errorMsg, url, lineNumber, columnNumber, errorObj) {
+    var errorStack = errorObj ? errorObj.stack : null;
+    // 这里进行上报
+    c(errorMsg, url, lineNumber, columnNumber, errorStack);
+};
+window.onunhandledrejection = function (e) {
+    var errorMsg = "", errorStack = "";
+    if (typeof e.reason === "object") {
+        errorMsg = e.reason.message;
+        errorStack = e.reason.stack;
+    }
+    else {
+        errorMsg = e.reason;
+    }
+    // 这里进行上报
+    c(errorMsg, errorStack);
+};
+// 将 script 变为异步加载
+export function loadScript(url, cb, isMoudule) {
+    var script = document.createElement('script');
+    script.src = url;
+    if (cb)
+        script.onload = cb;
+    if (isMoudule)
+        script.type = 'module';
+    script.async = true;
+    document.body.appendChild(script);
+}
+/**
+ * 程序阻塞多长时间
+ * @param time
+ */
+export function choke(time) {
+    if (time === void 0) { time = 1000; }
+    setTimeout(function () {
+        console.log('long time fun ...');
+        var start = Date.now();
+        while (Date.now() - start < time) { }
+    }, 0);
+}
+/**
+ * 节流
+ * @param handler
+ * @param wait
+ * @returns
+ */
+export var throttle = function (handler, wait) {
+    var lastTime = 0;
+    return function () {
+        var nowTime = new Date().getTime();
+        if (nowTime - lastTime > wait) {
+            handler.apply(this, arguments);
+            lastTime = nowTime;
+        }
+    };
+};
+/**
+ * 防抖
+ * @param handler
+ * @param delay
+ * @returns
+ */
+export function debounce(handler, delay) {
+    var timer;
+    return function () {
+        var _self = this, _arg = arguments;
+        clearTimeout(timer);
+        timer = setTimeout(function () {
+            handler.apply(_self, _arg);
+        }, delay);
+    };
+}

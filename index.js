@@ -1,4 +1,3 @@
+import utils from './dist';
 
-import { compareVersion } from './dist/string.js'
-
-console.log(compareVersion())
+export default utils;
