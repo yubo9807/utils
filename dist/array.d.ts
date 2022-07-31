@@ -82,6 +82,12 @@ export declare function haveArr(a: any[], b: any[]): any[];
  */
 export declare function uniqueArrayObject(arr: object[], key: string | number): object;
 /**
+ * 找出数组中只出现一次的数字
+ * @param arr
+ * @returns
+ */
+export declare function querySingle(arr: number[]): number;
+/**
  * 数组排列，看有多少种情况
  * @param arr
  * @returns

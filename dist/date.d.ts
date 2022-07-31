@@ -33,3 +33,17 @@ export declare function dateFormater(formater?: string, t?: string | Date): stri
  * @param {*} time
  */
 export declare function switchTimeFormat(time: Date | string): string;
+/**
+ * 计算距离当前时间的时间差
+ */
+export declare function getTimeDistance(diff?: number, obj?: {
+    day: number;
+    hours: number;
+    minute: number;
+    second: number;
+}): {
+    day: number;
+    hours: number;
+    minute: number;
+    second: number;
+};

@@ -3,9 +3,8 @@
  * @param origin 被克隆对象
  * @param target 克隆对象
  */
-export function mappingObj(origin, target) {
-    if (target === void 0) { target = {}; }
-    for (var prop in origin) {
+export function mappingObj(origin, target = {}) {
+    for (const prop in origin) {
         target[prop] = origin[prop];
     }
     return target;
@@ -15,10 +14,9 @@ export function mappingObj(origin, target) {
  * @param origin 被克隆对象
  * @param target 克隆对象
  */
-export function deepCloneObj(origin, target) {
-    if (target === void 0) { target = {}; }
-    var toStr = Object.prototype.toString;
-    for (var prop in origin) {
+export function deepCloneObj(origin, target = {}) {
+    const toStr = Object.prototype.toString;
+    for (const prop in origin) {
         if (origin.hasOwnProperty(prop)) { // 查看自身属性是否存在
             // 判断是数组还是对象
             if (origin[prop] !== null && typeof (origin[prop]) === 'object') {
@@ -47,16 +45,16 @@ export function cloneObj(obj) {
         return obj;
 }
 function cloneObject(obj) {
-    var result = {};
-    var names = Object.getOwnPropertyNames(obj);
-    for (var i = 0; i < names.length; i++) {
+    let result = {};
+    let names = Object.getOwnPropertyNames(obj);
+    for (let i = 0; i < names.length; i++) {
         result[names[i]] = cloneObj(obj[names[i]]);
     }
     return result;
 }
 function cloneArray(obj) {
-    var result = new Array(obj.length);
-    for (var i = 0; i < result.length; i++) {
+    let result = new Array(obj.length);
+    for (let i = 0; i < result.length; i++) {
         result[i] = cloneObj(obj[i]);
     }
     return result;
@@ -69,9 +67,9 @@ function cloneArray(obj) {
 export function getValue(obj, name) {
     if (!obj)
         return;
-    var nameList = name.split('.');
-    var temp = obj;
-    for (var i = 0; i < nameList.length; i++) {
+    let nameList = name.split('.');
+    let temp = obj;
+    for (let i = 0; i < nameList.length; i++) {
         if (temp[nameList[i]]) {
             temp = temp[nameList[i]];
         }
@@ -91,9 +89,9 @@ export function getValue(obj, name) {
 export function setValue(obj, data, value) {
     if (!obj)
         return;
-    var attrList = data.split('.');
-    var temp = obj;
-    for (var i = 0; i < attrList.length - 1; i++) {
+    let attrList = data.split('.');
+    let temp = obj;
+    for (let i = 0; i < attrList.length - 1; i++) {
         if (temp[attrList[i]]) {
             temp = temp[attrList[i]];
         }
@@ -111,7 +109,7 @@ export function setValue(obj, data, value) {
  * @returns
  */
 export function getLSUsedSpace(obj) {
-    return Object.keys(obj).reduce(function (total, curKey) {
+    return Object.keys(obj).reduce((total, curKey) => {
         if (!obj.hasOwnProperty(curKey))
             return total;
         if (typeof obj[curKey] === 'string') {
@@ -128,11 +126,11 @@ export function getLSUsedSpace(obj) {
  * @param {Object} object
  */
 export function getFormData(object) {
-    var formData = new FormData();
-    Object.keys(object).forEach(function (key) {
-        var value = object[key];
+    const formData = new FormData();
+    Object.keys(object).forEach(key => {
+        const value = object[key];
         if (Array.isArray(value)) {
-            value.forEach(function (subValue, i) { return formData.append(key + "[".concat(i, "]"), subValue); });
+            value.forEach((subValue, i) => formData.append(key + `[${i}]`, subValue));
         }
         else {
             formData.append(key, object[key]);

@@ -1,4 +1,8 @@
-declare const window: any, document: any, navigator: any, cookieStore: any;
+declare const window: any,
+              document: any,
+              navigator: any,
+              cookieStore: any,
+              FormData: any;
 
 /**
  * 获取 cookie 指定参数
@@ -176,3 +180,16 @@ export const browserType = () => {
     }; //判断是否IE浏览器
 }
 
+/**
+ * 生成 formData 表单
+ * @param {*} obj
+ * @returns
+ */
+ export function createFormData(obj) {
+    const data = Object.assign({}, obj)
+    const formData = new FormData()
+    for (const prop in data) {
+        formData.append(prop, data[prop])
+    }
+    return formData
+}

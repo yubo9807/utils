@@ -3,8 +3,7 @@
  * @param date
  * @returns
  */
-export function isWeekday(date) {
-    if (date === void 0) { date = new Date(); }
+export function isWeekday(date = new Date()) {
     return date.getDay() % 6 !== 0;
 }
 /**
@@ -12,8 +11,7 @@ export function isWeekday(date) {
  * @param date
  * @returns
  */
-export function timeFromDate(date) {
-    if (date === void 0) { date = new Date(); }
+export function timeFromDate(date = new Date()) {
     return date.toTimeString().slice(0, 8);
 }
 /**
@@ -21,7 +19,7 @@ export function timeFromDate(date) {
  * @param t
  */
 export function getCurrentDate(t) {
-    var date = t ? new Date(t) : new Date();
+    let date = t ? new Date(t) : new Date();
     return {
         year: date.getFullYear() + '',
         month: date.getMonth() + 1,
@@ -36,10 +34,8 @@ export function getCurrentDate(t) {
  * @param formater
  * @param t
  */
-export function dateFormater(formater, t) {
-    if (formater === void 0) { formater = 'YYYY-MM-DD hh:mm:ss'; }
-    if (t === void 0) { t = new Date(); }
-    var _a = getCurrentDate(t), year = _a.year, month = _a.month, day = _a.day, hour = _a.hour, minute = _a.minute, second = _a.second;
+export function dateFormater(formater = 'YYYY-MM-DD hh:mm:ss', t = new Date()) {
+    const { year, month, day, hour, minute, second } = getCurrentDate(t);
     return formater.replace(/YYYY/g, year)
         .replace(/YY/g, year.substr(2, 2))
         .replace(/MM/g, (month < 10 ? '0' : '') + month)
@@ -48,18 +44,57 @@ export function dateFormater(formater, t) {
         .replace(/mm/g, (minute < 10 ? '0' : '') + minute)
         .replace(/ss/g, (second < 10 ? '0' : '') + second);
 }
-var addZero = function (v) { return v < 10 ? '0' + v : v; };
+const addZero = (v) => v < 10 ? '0' + v : v;
 /**
  * 格林时间转为北京时间
  * @param {*} time
  */
 export function switchTimeFormat(time) {
-    var dateTime = new Date(time);
-    var year = dateTime.getFullYear();
-    var month = dateTime.getMonth() + 1;
-    var date = dateTime.getDate();
-    var hour = dateTime.getHours();
-    var minute = dateTime.getMinutes();
-    var second = dateTime.getSeconds();
-    return "".concat(year, "-").concat(addZero(month), "-").concat(addZero(date), " ").concat(addZero(hour), ":").concat(addZero(minute), ":").concat(addZero(second));
+    const dateTime = new Date(time);
+    const year = dateTime.getFullYear();
+    const month = dateTime.getMonth() + 1;
+    const date = dateTime.getDate();
+    const hour = dateTime.getHours();
+    const minute = dateTime.getMinutes();
+    const second = dateTime.getSeconds();
+    return `${year}-${addZero(month)}-${addZero(date)} ${addZero(hour)}:${addZero(minute)}:${addZero(second)}`;
+}
+const intiailObj = {
+    day: 0,
+    hours: 0,
+    minute: 0,
+    second: 0,
+};
+/**
+ * 计算距离当前时间的时间差
+ */
+export function getTimeDistance(diff = 0, obj = intiailObj) {
+    if (diff < 60) {
+        obj.second = diff;
+    }
+    else if (diff < 3600) {
+        const num = 60;
+        const month = Math.floor(diff / num);
+        const remain = diff - num * month;
+        obj.minute = month;
+        if (remain > 0)
+            getTimeDistance(remain, obj);
+    }
+    else if (diff < 3600 * 24) {
+        const num = 3600;
+        const hours = Math.floor(diff / num);
+        const remain = diff - num * hours;
+        obj.hours = hours;
+        if (remain > 0)
+            getTimeDistance(remain, obj);
+    }
+    else {
+        const num = 3600 * 24;
+        const day = Math.floor(diff / num);
+        const remain = diff - num * day;
+        obj.day = day;
+        if (remain > 0)
+            getTimeDistance(remain, obj);
+    }
+    return obj;
 }

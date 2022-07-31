@@ -1,6 +1,6 @@
 {
     "compilerOptions": {
-        "target": "es3",  // 配置编译目标代码的版本标准
+        "target": "esnext",  // 配置编译目标代码的版本标准
         "module": "esnext",  // 编译目标使用的模块化标准
         "lib": ["esnext"],  // 类型检查标准
         "outDir": "./dist",  // 编译后文件目录

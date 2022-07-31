@@ -150,6 +150,15 @@ export function uniqueArrayObject(arr: object[], key: string | number) {
 }
 
 /**
+ * 找出数组中只出现一次的数字
+ * @param arr 
+ * @returns 
+ */
+export function querySingle(arr: number[]) {
+    return arr.reduce((a, b) => a ^ b, 0);
+}
+
+/**
  * 数组排列，看有多少种情况
  * @param arr
  * @returns 
@@ -159,15 +168,15 @@ export function permute(arr: any[]) {
     let results: any[] = [];
 
     let go = (current: any[]) => {
-      if (current.length === arr.length){
-        results.push(current);
-        return;
-      }
-      arr.forEach(n => {
-        if (!current.includes(n)){
-          go([...current, n]);
+        if (current.length === arr.length) {
+            results.push(current);
+            return;
         }
-      });
+        arr.forEach(n => {
+            if (!current.includes(n)) {
+                go([...current, n]);
+            }
+        });
     }
     go([]);
     return results;

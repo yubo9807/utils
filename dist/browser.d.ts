@@ -53,3 +53,9 @@ export declare const isAppleDevice: boolean;
  * 判断浏览器类型
  */
 export declare const browserType: () => "Opera" | "Firefox" | "Chrome" | "Safari" | "IE";
+/**
+ * 生成 formData 表单
+ * @param {*} obj
+ * @returns
+ */
+export declare function createFormData(obj: any): any;

@@ -6,11 +6,11 @@ import * as date from './date';
 import * as array from './array';
 import * as network from './network';
 export default {
-    string: string,
-    regexp: regexp,
-    object: object,
-    number: number,
-    date: date,
-    array: array,
-    network: network
+    string,
+    regexp,
+    object,
+    number,
+    date,
+    array,
+    network,
 };

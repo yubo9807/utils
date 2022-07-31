@@ -1,15 +1,29 @@
 {
-  "name": "util",
+  "name": "utils",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
+  "exports": {
+    ".": {
+      "import": "./es/index.js",
+      "require": "./co/index.js"
+    }
+  },
   "scripts": {
     "dev": "nodemon --watch src -e ts --exec tsc",
-    "build": "rm -rf dist & tsc"
+    "build": "tsc"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/yubo9807/utils.git"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/yubo9807/utils/issues"
+  },
+  "homepage": "https://github.com/yubo9807/utils#readme",
   "devDependencies": {
     "@types/node": "^14.14.9",
     "nodemon": "^2.0.7",

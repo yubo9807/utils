@@ -17,6 +17,7 @@ export function numberSum(...args: number[]) {
 
 /**
  * 数字生成器
+ * @call const iter = createNum(); iter.next().value;
  */
 export function* createNum() {  // 生成器函数传参毫无意义
     let n = 0
@@ -144,4 +145,14 @@ function toHundreds(num: number) {
     result[1] = b < 20 ? numbers[b] : tens[Math.trunc(b / 10)]
     result[2] = b >= 20 && `${numbers[c]}`;
     return result.filter(Boolean).join(" ");
+}
+
+/**
+ * 判断 x 是否是 2 的 n 次方
+ * @param x 
+ * @returns 
+ */
+export function isPowerOf2(x: number) {
+    if (x <= 0) return false;
+    return (x & (x - 1)) === 0;
 }

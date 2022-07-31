@@ -11,6 +11,7 @@ export declare function randomNum(max: number, min?: number): number;
 export declare function numberSum(...args: number[]): number;
 /**
  * 数字生成器
+ * @call const iter = createNum(); iter.next().value;
  */
 export declare function createNum(): Generator<number, void, unknown>;
 /**
@@ -61,3 +62,9 @@ export declare function reverseInteger(num: number): number;
  * @returns
  */
 export declare function numberToWords(num: number): string;
+/**
+ * 判断 x 是否是 2 的 n 次方
+ * @param x
+ * @returns
+ */
+export declare function isPowerOf2(x: number): boolean;

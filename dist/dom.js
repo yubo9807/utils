@@ -4,12 +4,12 @@ import { ishasClass } from './regexp';
  * @param el
  * @returns
  */
-export var elementIsInFocus = function (el) { return (el === document.activeElement); };
+export const elementIsInFocus = (el) => (el === document.activeElement);
 /**
  * 节点转字符串
  * @param {*} event
  */
-export var nodeToString = function (node) {
+export const nodeToString = (node) => {
     var tmpNode = document.createElement('div');
     tmpNode.appendChild(node.cloneNode(true));
     var str = tmpNode.innerHTML;
@@ -21,7 +21,7 @@ export var nodeToString = function (node) {
  * @param {*} elem
  * @param {number} n （不可为负值）
  */
-export var lookupParent = function (elem, n) {
+export const lookupParent = (elem, n) => {
     while (elem && n) {
         elem = elem.parentElement; // IE 父元素节点选择
         n--;
@@ -31,7 +31,7 @@ export var lookupParent = function (elem, n) {
 /**
  * 返回当前元素的元素子节点
  */
-export var myChildren = function (ele) { return function () {
+export const myChildren = (ele) => function () {
     var child = ele.childNodes; // 获得 body 子元素集合
     var len = child.length;
     var arr = [];
@@ -41,13 +41,13 @@ export var myChildren = function (ele) { return function () {
         }
     }
     return arr;
-}; };
+};
 /**
  * 返回元素的第 n 个兄弟元素节点
  * @param {*} elem
  * @param {number} n 正返回后面的兄弟元素节点，n为负返回前面的，n为0返回自己
  */
-export var retSibling = function (elem, n) {
+export const retSibling = (elem, n) => {
     while (elem && n) {
         if (n > 0) {
             if (elem.nextElementSibling) {
@@ -77,7 +77,7 @@ export var retSibling = function (elem, n) {
  * @param {*} elem
  * @param {string} prop CSS属性
  */
-export var getStyle = function (elem, prop) {
+export const getStyle = (elem, prop) => {
     if (window.getComputedStyle) {
         return window.getComputedStyle(elem, null)[prop];
     }
@@ -89,7 +89,7 @@ export var getStyle = function (elem, prop) {
  * 阻止事件冒泡
  * @param {*} e 源事件中也需要传参
  */
-export var stopBubble = function (e) {
+export const stopBubble = (e) => {
     e = e || window.enent;
     if (e.stopPropagation) {
         e.stopPropagation();
@@ -103,10 +103,10 @@ export var stopBubble = function (e) {
  * @param el
  * @param className 自定义 class 属性
  */
-export var addClass = function (el, className) {
+export const addClass = (el, className) => {
     if (ishasClass(el, className))
         return;
-    var newClass = el.className.split(' ');
+    let newClass = el.className.split(' ');
     newClass.push(className);
     el.className = newClass.join(' ');
 };
@@ -115,17 +115,17 @@ export var addClass = function (el, className) {
  * @param el
  * @param className 自定义 class 属性
  */
-export var removeClass = function (el, className) {
+export const removeClass = (el, className) => {
     if (!ishasClass(el, className))
         return;
-    var reg = new RegExp('(^|\\s)' + className + '(\\s|$)', 'g');
+    let reg = new RegExp('(^|\\s)' + className + '(\\s|$)', 'g');
     el.className = el.className.replace(reg, ' ');
 };
 /**
  * 阻止默认事件
  * @param {*} event
  */
-export var cancelHandler = function (e) {
+export const cancelHandler = (e) => {
     e = e || window.event;
     if (e.preventDefault) {
         e.preventDefault();
@@ -139,14 +139,14 @@ export var cancelHandler = function (e) {
  * @param {Element} ele 所拖拽的元素
  * @param {Element} limit 限制移动范围的元素（为空时，不限制移动范围）
  */
-export var mouseDrag = function (ele, limit) {
+export const mouseDrag = (ele, limit) => {
     // 鼠标按下
     ele.addEventListener('mousedown', function (e) {
         e = e || window.event;
         // 距离初始位置左顶点的距离 = 鼠标按下的坐标 - 元素的坐标
         var disX = e.clientX - ele.offsetLeft, disY = e.clientY - ele.offsetTop;
         window.addEventListener('mousemove', mouseMove, false);
-        window.addEventListener('mouseup', function () {
+        window.addEventListener('mouseup', () => {
             window.removeEventListener('mousemove', mouseMove, false);
         }, false);
         function mouseMove(e) {

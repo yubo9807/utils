@@ -5,7 +5,7 @@
  * @param errorExt 
  * @returns 
  */
- export function asyncto(promise: Promise<any>, errorExt: string) {
+export function asyncto(promise: Promise<any>, errorExt: string) {
   return promise
     .then(data => [ null, data ])
     .catch(err => {

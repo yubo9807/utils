@@ -1,8 +1,8 @@
-var c = console.log;
-window.addEventListener('load', function () {
-    setTimeout(function () {
-        var timing = window.performance.timing, loadObj = {};
-        var paint = window.performance.getEntriesByType('paint');
+const { log: c } = console;
+window.addEventListener('load', () => {
+    setTimeout(() => {
+        const timing = window.performance.timing, loadObj = {};
+        const paint = window.performance.getEntriesByType('paint');
         loadObj['DNS查询耗时'] = timing.domainLookupEnd - timing.domainLookupStart;
         loadObj['TCP链接耗时'] = timing.connectEnd - timing.connectStart;
         loadObj['request耗时'] = timing.responseEnd - timing.responseStart;
@@ -16,13 +16,13 @@ window.addEventListener('load', function () {
     }, 0);
 });
 // 采集JS Error
-window.onerror = function (errorMsg, url, lineNumber, columnNumber, errorObj) {
-    var errorStack = errorObj ? errorObj.stack : null;
+window.onerror = (errorMsg, url, lineNumber, columnNumber, errorObj) => {
+    let errorStack = errorObj ? errorObj.stack : null;
     // 这里进行上报
     c(errorMsg, url, lineNumber, columnNumber, errorStack);
 };
-window.onunhandledrejection = function (e) {
-    var errorMsg = "", errorStack = "";
+window.onunhandledrejection = (e) => {
+    let errorMsg = "", errorStack = "";
     if (typeof e.reason === "object") {
         errorMsg = e.reason.message;
         errorStack = e.reason.stack;
@@ -48,11 +48,10 @@ export function loadScript(url, cb, isMoudule) {
  * 程序阻塞多长时间
  * @param time
  */
-export function choke(time) {
-    if (time === void 0) { time = 1000; }
-    setTimeout(function () {
+export function choke(time = 1000) {
+    setTimeout(() => {
         console.log('long time fun ...');
-        var start = Date.now();
+        const start = Date.now();
         while (Date.now() - start < time) { }
     }, 0);
 }
@@ -62,10 +61,10 @@ export function choke(time) {
  * @param wait
  * @returns
  */
-export var throttle = function (handler, wait) {
-    var lastTime = 0;
+export const throttle = (handler, wait) => {
+    let lastTime = 0;
     return function () {
-        var nowTime = new Date().getTime();
+        let nowTime = new Date().getTime();
         if (nowTime - lastTime > wait) {
             handler.apply(this, arguments);
             lastTime = nowTime;
@@ -79,9 +78,9 @@ export var throttle = function (handler, wait) {
  * @returns
  */
 export function debounce(handler, delay) {
-    var timer;
+    let timer;
     return function () {
-        var _self = this, _arg = arguments;
+        let _self = this, _arg = arguments;
         clearTimeout(timer);
         timer = setTimeout(function () {
             handler.apply(_self, _arg);
