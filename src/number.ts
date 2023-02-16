@@ -4,7 +4,7 @@
  * @param min 最小值
  */
 export function randomNum(max: number, min: number = 0) {
-    return ~~(Math.random() * (max - min) + min);
+  return ~~(Math.random() * (max - min) + min);
 }
 
 /**
@@ -12,7 +12,7 @@ export function randomNum(max: number, min: number = 0) {
  * @param args
  */
 export function numberSum(...args: number[]) {
-    return args.reduce((s, item) => s + item, 0)
+  return args.reduce((s, item) => s + item, 0)
 }
 
 /**
@@ -20,11 +20,11 @@ export function numberSum(...args: number[]) {
  * @call const iter = createNum(); iter.next().value;
  */
 export function* createNum() {  // 生成器函数传参毫无意义
-    let n = 0
-    while (true) {
-        yield n;
-        n++;
-    }
+  let n = 0
+  while (true) {
+    yield n;
+    n++;
+  }
 }
 
 /**
@@ -33,14 +33,14 @@ export function* createNum() {  // 生成器函数传参毫无意义
  * @returns 
  */
 export function fixedNumberAdd(...args: number[]) {
-    let intSum = 0, floatSum = 0;
-    [...args].forEach((val: number) => {
-        const int = String(val).split('.')[0];  // 整数部位
-        const float = String(val).split('.')[1] ?? 0;  // 小数部位
-        intSum += Number(int);
-        floatSum += Number(float);
-    });
-    return Number(intSum + '.' + floatSum);
+  let intSum = 0, floatSum = 0;
+  [...args].forEach((val: number) => {
+    const int = String(val).split('.')[0];  // 整数部位
+    const float = String(val).split('.')[1] ?? 0;  // 小数部位
+    intSum += Number(int);
+    floatSum += Number(float);
+  });
+  return Number(intSum + '.' + floatSum);
 }
 
 /**
@@ -50,15 +50,15 @@ export function fixedNumberAdd(...args: number[]) {
  * @param end 结束加密索引
  */
 export function numberEncrypt(num: number | string, start = 3, end = -4) {
-    if (!Number(num)) return;
-    let password = '';
-    const startNum = String(num).slice(0, start);
-    const encryptLen = String(num).slice(start, end).length;
-    const endNum = String(num).slice(end);
-    for (let i = 0; i < encryptLen; i++) {
-        password += '*';
-    }
-    return startNum + password + endNum;
+  if (!Number(num)) return;
+  let password = '';
+  const startNum = String(num).slice(0, start);
+  const encryptLen = String(num).slice(start, end).length;
+  const endNum = String(num).slice(end);
+  for (let i = 0; i < encryptLen; i++) {
+    password += '*';
+  }
+  return startNum + password + endNum;
 }
 
 /**
@@ -68,16 +68,16 @@ export function numberEncrypt(num: number | string, start = 3, end = -4) {
  * @returns
  */
 export function toFixed2AndBankCount(num: string | number = '', fixed = 2) {
-    const str = String(num);
-    const reg = /(?=(\B)(\d{3})+$)/g;
-    if (str.includes('.')) {
-        const index = str.indexOf('.');
-        const int = str.slice(0, index);  // 整数部分
-        const float = str.slice(index, index + fixed + 1);  // 浮点数部分
-        return int.replace(reg, ',') + float;
-    } else {
-        return str.replace(reg, ',');
-    }
+  const str = String(num);
+  const reg = /(?=(\B)(\d{3})+$)/g;
+  if (str.includes('.')) {
+    const index = str.indexOf('.');
+    const int = str.slice(0, index);  // 整数部分
+    const float = str.slice(index, index + fixed + 1);  // 浮点数部分
+    return int.replace(reg, ',') + float;
+  } else {
+    return str.replace(reg, ',');
+  }
 }
 
 /**
@@ -87,8 +87,8 @@ export function toFixed2AndBankCount(num: string | number = '', fixed = 2) {
  * @returns 
  */
 export function numberPercentage(num: number | string, digit = 0) {
-    if (!Number(num)) return;
-    return Math.abs(Number(num) * 100).toFixed(digit) + '%';
+  if (!Number(num)) return;
+  return Math.abs(Number(num) * 100).toFixed(digit) + '%';
 }
 
 /**
@@ -100,7 +100,7 @@ export function numberPercentage(num: number | string, digit = 0) {
  * @returns 
  */
 export function count2Spotlength(x1: number, y1: number, x2: number, y2: number) {
-    return Math.hypot(x2 - x1, y2 - y1);
+  return Math.hypot(x2 - x1, y2 - y1);
 }
 
 /**
@@ -109,15 +109,15 @@ export function count2Spotlength(x1: number, y1: number, x2: number, y2: number)
  * @returns 
  */
 export function reverseInteger(num: number) {
-    let result = 0;
-    while (num !== 0) {
-        result = result * 10 + num % 10;
-        // Math.trunc() 方法会将数字的小数部分去掉，只保留整数部分
-        num = Math.trunc(num / 10);
-    }
+  let result = 0;
+  while (num !== 0) {
+    result = result * 10 + num % 10;
+    // Math.trunc() 方法会将数字的小数部分去掉，只保留整数部分
+    num = Math.trunc(num / 10);
+  }
 
-    if (result > 2 ** 31 || result < -(2 ** 31)) return 0;
-    return result;
+  if (result > 2 ** 31 || result < -(2 ** 31)) return 0;
+  return result;
 }
 
 /**
@@ -126,25 +126,25 @@ export function reverseInteger(num: number) {
  * @returns 
  */
 export function numberToWords(num: number) {
-    let result = toHundreds(num % 1000);
-    const bigNumbers = ["Thousand", "Million", "Billion"];
-    for (let i = 0; i < 3; ++i) {
-        num = Math.trunc(num / 1000);
-        result = num % 1000 !== 0 ? [toHundreds(num % 1000), bigNumbers[i], result].filter(Boolean).join(" ") : result;
-    }
-    return result.length === 0 ? "Zero" : result;
+  let result = toHundreds(num % 1000);
+  const bigNumbers = ["Thousand", "Million", "Billion"];
+  for (let i = 0; i < 3; ++i) {
+    num = Math.trunc(num / 1000);
+    result = num % 1000 !== 0 ? [toHundreds(num % 1000), bigNumbers[i], result].filter(Boolean).join(" ") : result;
+  }
+  return result.length === 0 ? "Zero" : result;
 }
 
 function toHundreds(num: number) {
-    const numbers = ["", "One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine", "Ten",
-        "Eleven", "Twelve", "Thirteen", "Fourteen", "Fifteen", "Sixteen", "Seventeen", "Eighteen", "Nineteen"];
-    const tens = ["", "", "Twenty", "Thirty", "Forty", "Fifty", "Sixty", "Seventy", "Eighty", "Ninety"];
-    const result = Array(3).fill("");
-    let a = Math.trunc(num / 100), b = num % 100, c = num % 10;
-    result[0] = a > 0 && `${numbers[a]} Hundred`;
-    result[1] = b < 20 ? numbers[b] : tens[Math.trunc(b / 10)]
-    result[2] = b >= 20 && `${numbers[c]}`;
-    return result.filter(Boolean).join(" ");
+  const numbers = ["", "One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine", "Ten",
+    "Eleven", "Twelve", "Thirteen", "Fourteen", "Fifteen", "Sixteen", "Seventeen", "Eighteen", "Nineteen"];
+  const tens = ["", "", "Twenty", "Thirty", "Forty", "Fifty", "Sixty", "Seventy", "Eighty", "Ninety"];
+  const result = Array(3).fill("");
+  let a = Math.trunc(num / 100), b = num % 100, c = num % 10;
+  result[0] = a > 0 && `${numbers[a]} Hundred`;
+  result[1] = b < 20 ? numbers[b] : tens[Math.trunc(b / 10)]
+  result[2] = b >= 20 && `${numbers[c]}`;
+  return result.filter(Boolean).join(" ");
 }
 
 /**
@@ -153,6 +153,6 @@ function toHundreds(num: number) {
  * @returns 
  */
 export function isPowerOf2(x: number) {
-    if (x <= 0) return false;
-    return (x & (x - 1)) === 0;
+  if (x <= 0) return false;
+  return (x & (x - 1)) === 0;
 }

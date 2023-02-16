@@ -3,12 +3,6 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
-  "exports": {
-    ".": {
-      "import": "./es/index.js",
-      "require": "./co/index.js"
-    }
-  },
   "scripts": {
     "dev": "nodemon --watch src -e ts --exec tsc",
     "build": "tsc"

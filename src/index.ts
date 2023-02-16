@@ -1,17 +1,7 @@
-import * as string from './string';
-import * as regexp from './regexp';
-import * as object from './object';
-import * as number from './number';
-import * as date from './date';
-import * as array from './array';
-import * as network from './network';
-
-export default {
-    string,
-    regexp,
-    object,
-    number,
-    date,
-    array,
-    network,
-}
+export * as string from './string';
+export * as regexp from './regexp';
+export * as object from './object';
+export * as number from './number';
+export * as date from './date';
+export * as array from './array';
+export * as network from './network';

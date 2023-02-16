@@ -3,10 +3,10 @@ declare const window: any, document: any;
 const { log: c } = console;
 
 window.addEventListener('load', () => {
-    setTimeout(() => {
+	setTimeout(() => {
 		const timing = window.performance.timing, loadObj = {};
 		const paint = window.performance.getEntriesByType('paint');
-	
+
 		loadObj['DNS查询耗时'] = timing.domainLookupEnd - timing.domainLookupStart;
 		loadObj['TCP链接耗时'] = timing.connectEnd - timing.connectStart;
 		loadObj['request耗时'] = timing.responseEnd - timing.responseStart;
@@ -14,13 +14,13 @@ window.addEventListener('load', () => {
 		loadObj['白屏时间'] = timing.domLoading - timing.fetchStart;
 		loadObj['domready'] = timing.domContentLoadedEventEnd - timing.fetchStart;
 		loadObj['onload'] = timing.loadEventEnd - timing.fetchStart;
-	
+
 		loadObj['首次绘制时间(FC)'] = paint[0].startTime;
 		loadObj['首次内容绘制时间(FCP)'] = paint[1].startTime;
 
 		window.load = loadObj;
-    }, 0);
-  })
+	}, 0);
+})
 
 
 // 采集JS Error
@@ -55,11 +55,11 @@ export function loadScript(url: string, cb: Function, isMoudule: boolean) {
  * 程序阻塞多长时间
  * @param time 
  */
- export function choke(time: number = 1000) {
+export function choke(time: number = 1000) {
 	setTimeout(() => {
 		console.log('long time fun ...');
 		const start = Date.now();
-		while(Date.now() - start < time) {}
+		while (Date.now() - start < time) { }
 	}, 0);
 }
 
@@ -70,14 +70,14 @@ export function loadScript(url: string, cb: Function, isMoudule: boolean) {
  * @returns 
  */
 export const throttle = (handler: () => void, wait: number) => {
-    let lastTime = 0;
-    return function() {
-        let nowTime = new Date().getTime();
-        if (nowTime - lastTime > wait) {
-            handler.apply(this, arguments);
-            lastTime = nowTime;
-        }
-    }
+	let lastTime = 0;
+	return function (...args: any[]) {
+		let nowTime = new Date().getTime();
+		if (nowTime - lastTime > wait) {
+			handler.apply(this, ...args);
+			lastTime = nowTime;
+		}
+	}
 }
 
 /**
@@ -86,13 +86,13 @@ export const throttle = (handler: () => void, wait: number) => {
  * @param delay 
  * @returns 
  */
-export function debounce(handler: () => void, delay: number){
-    let timer: NodeJS.Timeout;
-    return function() {
-        let _self = this, _arg = arguments;
-        clearTimeout(timer);
-        timer = setTimeout(function(){
-            handler.apply(_self, _arg);
-        }, delay);
-    }
+export function debounce(handler: () => void, delay: number) {
+	let timer = null;
+	return function (...args: any[]) {
+		let _self = this;
+		clearTimeout(timer);
+		timer = setTimeout(function () {
+			handler.apply(_self, ...args);
+		}, delay);
+	}
 }

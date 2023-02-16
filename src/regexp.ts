@@ -1,75 +1,45 @@
-
-/**
- * 验证邮箱格式
- * @param str
- */
-export const isEmail = (str: string) => /^([a-zA-Z0-9_-])+@([a-zA-Z0-9_-])+((.[a-zA-Z0-9_-]{2,3}){1,2})$/.test(str);
-
-/**
- * 验证手机号码
- * @param str 
- */
-export const isMobile = (str: string) => /^1[0-9]{10}$/.test(str);
-
-/**
- * 电话号码验证
- * @param str
- */
-export const isPhone = (str: string) => /^([0-9]{3,4}-)?[0-9]{7,8}$/.test(str);
-
-/**
- * 是否 url 地址
- * @param str 
- */
-export const isURL = (str: string) => /^http[s]?:\/\/.*/.test(str);
-
 /**
  * 检测密码强度（最强为 4 级）
  * @param str 
  */
-export const checkPwd = (str: string) => {
-    var Lv = 0;
-    if (str.length < 6) {
-        return Lv
-    }
-    if (/[0-9]/.test(str)) {
-        Lv++
-    }
-    if (/[a-z]/.test(str)) {
-        Lv++
-    }
-    if (/[A-Z]/.test(str)) {
-        Lv++
-    }
-    if (/[\.|-|_]/.test(str)) {
-        Lv++
-    }
-    return Lv;
+export const checkPasswordLevel = (str: string) => {
+	var lv = 0;
+	if (str.length < 6) return lv;
+	/[0-9]/.test(str) && lv++;
+	/[a-z]/.test(str) && lv++;
+	/[A-Z]/.test(str) && lv++;
+	/[\.|-|_]/.test(str) && lv++;
+	return lv;
 }
 
 /**
- * 检测属于什么类型
- * @param o
+ * 判断数据有没有发生变化
+ * @param x 
+ * @param y 
+ * @returns 
  */
-export const isType = (o: any) => Object.prototype.toString.call(o).slice(8, -1);
+export function hasChange(x: any, y: any) {
+	if (x === y) {
+		return x === 0 && 1 / x !== 1 / y;
+	} else {
+		return x === x || y === y;
+	}
+}
 
 /**
- * 去除 html 标签
+ * 去除 xml 标签
  * @param str 
  */
-export const removeHtmltag = (str: string) => str.replace(/<[^>]+>/g, '');
-
-export const isFixed2Float = (str: string) => {
-    const reg = /^(([1-9][0-9]*)|(([0]\.\d{1,2}|[1-9][0-9]*\.\d{1,2})))$/;
-    return reg.test(str)
+export function removeXMLTag(str: string) {
+	return str.replace(/<[^>]+>/g, '');
 }
+
 /**
- * 是否包含某个 class
- * @param el 
- * @param className 
+ * 是否符合两位浮点数
+ * @param str 
+ * @returns 
  */
-export const ishasClass = (el: any, className: string) => {
-    let reg = new RegExp('(^|\\s)' + className + '(\\s|$)')
-    return reg.test(el.className)
+export function isFixed2Float(str: string) {
+	const reg = /^(([1-9][0-9]*)|(([0]\.\d{1,2}|[1-9][0-9]*\.\d{1,2})))$/;
+	return reg.test(str);
 }
-

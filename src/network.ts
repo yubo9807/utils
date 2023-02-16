@@ -1,3 +1,23 @@
+declare const process;
+
+/**
+ * 异步执行一个函数
+ * @param func 
+ */
+export function asyncExecute(func: Function) {
+  if (typeof Promise !== void 0) {
+    Promise.resolve().then(func as any);
+  } else if (typeof MutationObserver !== void 0) {
+    const ob = new MutationObserver(func as MutationCallback);
+    const textNode = document.createTextNode('0');
+    ob.observe(textNode, { characterData: true });
+    textNode.data = '1';
+  } else if (typeof process !== void 0) {
+    process.nextTick(func);
+  } else {
+    setTimeout(func, 0);
+  }
+}
 
 /**
  * 请求函数封装
@@ -11,9 +31,9 @@ export function asyncto(promise: Promise<any>, errorExt: string) {
     .catch(err => {
       if (errorExt) {
         const parsedError = Object.assign({}, err, errorExt);
-        return [ parsedError, undefined ];
+        return [ parsedError, null ];
       }
-      return [ err, undefined ];
+      return [ err, null ];
     })
 }
 
@@ -63,4 +83,20 @@ export default (axios, option: Option) => {
     })
   });
 
+}
+
+/**
+ * fetch 超时取消请求
+ * @param time 超时时长
+ * @returns fetch()
+ */
+function fetchTimeout(time: number) {
+  return (input: RequestInfo | URL, options: RequestInit = {}) => {
+    const controller = new AbortController();
+    options.signal = controller.signal;
+    setTimeout(() => {
+      controller.abort();
+    }, time)
+    return fetch(input, options);
+  }
 }

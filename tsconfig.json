@@ -1,8 +1,8 @@
 {
     "compilerOptions": {
-        "target": "esnext",  // 配置编译目标代码的版本标准
-        "module": "esnext",  // 编译目标使用的模块化标准
-        "lib": ["esnext"],  // 类型检查标准
+        "target": "ESNext",  // 配置编译目标代码的版本标准
+        "module": "ESNext",  // 编译目标使用的模块化标准
+        "lib": ["ESNext", "DOM.Iterable", "DOM"],  // 类型检查标准
         "outDir": "./dist",  // 编译后文件目录
         "moduleResolution": "classic",  // 模块解析策略方式
         "strictNullChecks": false,  // 更加严格的空类型检查
