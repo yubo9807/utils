@@ -1,3 +1,5 @@
+import { isPromise } from "./judge";
+
 declare const process;
 
 /**
@@ -90,7 +92,7 @@ export default (axios, option: Option) => {
  * @param time 超时时长
  * @returns fetch()
  */
-function fetchTimeout(time: number) {
+export function fetchTimeout(time: number) {
   return (input: RequestInfo | URL, options: RequestInit = {}) => {
     const controller = new AbortController();
     options.signal = controller.signal;
@@ -99,4 +101,101 @@ function fetchTimeout(time: number) {
     }, time)
     return fetch(input, options);
   }
+}
+
+
+type PromiseFn = (...args: any[]) => Promise<any>
+
+export class ProcessTasks {
+  isRuning = false;  // 是否在运行中
+  #tasks   = null;   // 任务队列
+  #i       = 0;      // 执行队列下标
+
+  /**
+   * 执行任务队列
+   * 如果其中一个任务失败，返回失败结果，后续任务都不会执行
+   * 在执行过程中或执行前可追加任务
+   * 若在整个执行结束后追加了任务，请重新执行 start
+   * @param tasks ...args 任务队列
+   */
+  constructor(...tasks: Array<PromiseFn | Function>) {
+    this.#tasks = tasks;
+  }
+
+  /**
+   * 开始/继续 执行任务
+   * @returns 暂停～开始～暂停/结束 的每项任务的返回结果
+   */
+  start = () => {
+    if (this.#tasks === null) {
+      console.warn('执行队列被提前回收');
+      return;
+    }
+    this.isRuning = true;
+    return new Promise(async (resolve, reject) => {
+      await this.#execute().then(res => resolve(res));
+    });
+  }
+
+  /**
+   * 递归执行队列
+   * @param results 收集返回值
+   * @returns 
+   */
+  #execute = async (results = []) => {
+    if (!this.isRuning) return;  // 被暂停，结束循环
+    const len = this.#tasks.length;
+    if (this.#i === len - 1) this.isRuning = false;  // 执行到最后一个任务，暂停任务
+
+    const result = this.#tasks[this.#i]();
+    this.#i ++;
+    if (isPromise(result)) {
+      return await result.then(async res => {
+        results.push(res);
+        if (this.#tasks.length > len) {
+          this.isRuning = true;  // 发现中途有队列推送，继续递归执行
+          return await this.#execute(results);
+        }
+        if (!this.isRuning) {
+          return Promise.resolve(results);
+        } else {
+          return await this.#execute(results);
+        }
+      }).catch(err => {
+        this.isRuning = false;
+        return Promise.reject(err);
+      });
+    } else {
+      results.push(result);
+      if (!this.isRuning) return Promise.resolve(results);
+    }
+    
+  }
+
+  /**
+   * 暂停 任务执行
+   */
+  pause = () => {
+    this.isRuning = false;
+  }
+
+  /**
+   * 追加任务
+   * @param fn 
+   */
+  push = (fn: PromiseFn | Function) => {
+    this.#tasks.push(fn);
+  }
+
+  /**
+   * 使用结束后，将任务队列从内存中回收
+   */
+  recycle = () => {
+    if (this.isRuning) {
+      console.warn('队列正在执行中，禁止回收');
+      return;
+    };
+    this.#tasks = null;
+  }
+
 }

@@ -55,12 +55,23 @@ export function loadScript(url: string, cb: Function, isMoudule: boolean) {
  * 程序阻塞多长时间
  * @param time 
  */
-export function choke(time: number = 1000) {
+export function choke(time = 1000) {
 	setTimeout(() => {
 		console.log('long time fun ...');
 		const start = Date.now();
 		while (Date.now() - start < time) { }
 	}, 0);
+}
+
+/**
+ * 延时
+ * @param time 
+ * @returns 
+ */
+export function delay(time = 1000) {
+  return new Promise((resolve, reject) => {
+    setTimeout(resolve, time);
+  })
 }
 
 /**

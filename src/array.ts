@@ -1,35 +1,39 @@
 import { randomNum } from './number';
+import { clone } from "./object";
+
 
 /**
- * 生成指定长度的数组
- * @param len 数组的长度
+ * 创建一个指定长度的数组，并填入内容
+ * 与 new Array(len).fill() 的不同是写入的每一项不会出现同一引用地址
+ * @param len 
+ * @param item 
+ * @returns 
  */
-export function createStipulateLengthArr(len: number) {
-  return [...new Array(len).keys()];
-}
-
-/**
- * 数组排序
- * @param arr 数组
- * @param num 规定排序方式 1：正序， 2：倒序， 3：随机
- */
-export function arrSort(arr: number[], num: number = 1) {
-  if (num === 1) return [...arr].sort((a, b) => a - b);
-  if (num === 2) return [...arr].sort((a, b) => b - a);
-  if (num === 3) return [...arr].sort(() => Math.random() - 0.5);
+export function createArray(len: number, item: any = void 0) {
+  const arr = new Array(len);
+  let i = 0;
+  while (i < arr.length) {
+    arr[i] = clone(item);
+    i++;
+  }
+  return arr;
 }
 
 /**
  * 数组中最大的数
  * @param arr 
  */
-export const arrMax = (arr: number[]) => Math.max.apply(null, arr);
+export function arrMax(arr: number[]) {
+  return Math.max.apply(null, arr);
+}
 
 /**
  * 数组中最小的数
  * @param arr 
  */
-export const arrMin = (arr: number[]) => Math.min.apply(null, arr);
+export function arrMin(arr: number[]) {
+  Math.min.apply(null, arr);
+}
 
 /**
  * 数组降维
@@ -38,12 +42,6 @@ export const arrMin = (arr: number[]) => Math.min.apply(null, arr);
 export function arrDropDimension(arr: any[]) {
   return Array.prototype.concat.apply([], arr);
 }
-
-/**
- * 数组去重
- * @param arr 被去重数组
- */
-export const arrUnique = (arr: any[]) => [...new Set(arr)];
 
 /**
  * 创建指定长度的随机数的数组，且规定范围
@@ -76,7 +74,7 @@ export function classChangeArr(classArr: Iterable<unknown> | ArrayLike<unknown>)
 
 /**
  * 转换为二维数组
- * @param arr 数组
+ * @param arr   数组
  * @param count 多少个数为一组
  */
 export function multArray(arr: any[], count = 2) {
@@ -94,6 +92,7 @@ export function multArray(arr: any[], count = 2) {
  * @param a 数组1
  * @param b 数组2
  * @returns 
+ * @call isArrayEqual([6, 5, 2, 4, 1, 3], [1, 2, 3, 4, 5, 6])  //--> false
  */
 export function isArrayEqual(a: any[], b: any[], res = true) {
   if (a.length !== b.length) return res = false;
@@ -101,40 +100,41 @@ export function isArrayEqual(a: any[], b: any[], res = true) {
   if (a.find(x => !s.has(x))) return res = false;
   return res;
 }
-// isArrayEqual([6, 5, 2, 4, 1, 3], [1, 2, 3, 4, 5, 6])  //--> false
 
 /**
  * 检查数组各项相等
  * @param arr 
  * @returns 
+ * @call allEqual([1, 1, 1, 1])  //--> true
  */
-export const allEqual = (arr: any[]) => arr.every(item => item === arr[0]);
-// allEqual([1, 1, 1, 1])  //--> true
+export function allEqual(arr: any[]) {
+  return arr.every(item => item === arr[0]);
+}
 
 /**
  * 两个数组的 交集
  * @param a 数组1
  * @param b 数组2
  * @returns 
+ * @call intersectionArray(['a', 2, 6, 7], ['a', 2, 9, 'b'])  //--> [6, 7]
  */
-export function diffArray(a: any[], b: any[]) {
+export function intersectionArray(a: any[], b: any[]) {
   const s = new Set(b);
   let arr = a.filter(x => !s.has(x));
   return arr;
 }
-// diffArray(['a', 2, 6, 7], ['a', 2, 9, 'b'])  //--> [6, 7]
 
 /**
  * 两个数组的 并集
  * @param a 
  * @param b 
  * @returns 
+ * @call unionArr([1, 2, 6, 7], [1, 2, 9, 5])  //--> [1, 2]
  */
-export function haveArr(a: any[], b: any[]) {
+export function unionArr(a: any[], b: any[]) {
   const s = new Set(b);
   return a.filter(x => s.has(x));
 }
-// haveArr([1, 2, 6, 7], [1, 2, 9, 5])  //--> [1, 2]
 
 /**
  * 数组对象去重

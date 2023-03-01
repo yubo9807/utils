@@ -55,7 +55,7 @@ export function deepCloneObj(origin: AnyObj, target: AnyObj = {}) {
  * JSON.parse(JSON.stringify(obj))  // 此方法无法合并代理对象
  * @param obj 
  */
-export function cloneObj(obj: any) {
+export function clone(obj: any) {
 	// 克隆算法
 	if (obj instanceof Array) return cloneArray(obj);
 	else if (obj instanceof Object) return cloneObject(obj);
@@ -65,14 +65,14 @@ function cloneObject(obj: any) {
 	let result = {};
 	let names = Object.getOwnPropertyNames(obj);
 	for (let i = 0; i < names.length; i++) {
-		result[names[i]] = cloneObj(obj[names[i]]);
+		result[names[i]] = clone(obj[names[i]]);
 	}
 	return result;
 }
 function cloneArray(obj: any) {
 	let result = new Array(obj.length);
 	for (let i = 0; i < result.length; i++) {
-		result[i] = cloneObj(obj[i]);
+		result[i] = clone(obj[i]);
 	}
 	return result;
 }
@@ -81,6 +81,7 @@ function cloneArray(obj: any) {
  * 获取对象的 value 值
  * @param obj 要查询的对象
  * @param name 对象的 key 值 “a.b”
+ * @call getValue({a: 1, b: {c: 3}}, 'b.c')  //--> 3
  */
 export function getValue(obj: any, name: string) {
 	if (!obj) return;
@@ -95,7 +96,6 @@ export function getValue(obj: any, name: string) {
 	}
 	return temp;
 }
-// getValue({a: 1, b: {c: 3}}, 'b.c')  //--> 3
 
 /**
  * 设置对象 value 值
@@ -125,23 +125,33 @@ export function setValue(obj: AnyObj, data: string, value: any) {
  * @returns 
  */
 export function getLSUsedSpace(obj: any) {
-	return Object.keys(obj).reduce((total, curKey) => {
-		if (!obj.hasOwnProperty(curKey)) return total;
 
-		if (typeof obj[curKey] === 'string') {
-			total += obj[curKey].length + curKey.length;
-		} else {
-			total += JSON.stringify(obj[curKey]).replace(/"/g, '').length + curKey.length;
-		}
-		return total;
-	}, 0);
+  const length = Object.keys(obj).reduce((total, curKey) => {
+    if (!obj.hasOwnProperty(curKey)) return total;
+
+    if (typeof obj[curKey] === 'string') total += obj[curKey].length + curKey.length;
+    else total += JSON.stringify(obj[curKey]).replace(/"/g, '').length + curKey.length;
+
+    return total;
+  }, 0);
+
+  const symbolLen = Object.getOwnPropertySymbols(obj).reduce((total, curKey) => {
+    if (!obj.hasOwnProperty(curKey)) return total;
+
+    if (typeof obj[curKey] === 'string') total += obj[curKey].length;
+    else total += JSON.stringify(obj[curKey]).replace(/"/g, '').length;
+
+    return total;
+  }, 0);
+
+  return length + symbolLen;
 }
 
 /**
- * 对象转化为formdata
- * @param {Object} object
+ * object 转 formdata
+ * @param object
  */
-export function getFormData(object: any) {
+export function objectToFormData(object: AnyObj) {
 	const formData = new FormData();
 	Object.keys(object).forEach(key => {
 		const value = object[key];

@@ -9,14 +9,14 @@ declare const navigator: any,
  */
 export async function getCookie(key: string) {
   if (typeof cookieStore === 'object') {
-    const obj = await cookieStore.get(key)
-    return obj?.value
+    const obj = await cookieStore.get(key);
+    return obj?.value;
   }
   const cookie = document.cookie;
   const str = cookie.replace(/\s/g, '');
   const obj = {}
   str.split(';').forEach((val: string) => {
-    obj[val.split('=')[0]] = val.split('=')[1]
+    obj[val.split('=')[0]] = val.split('=')[1];
   })
   return obj[key];
 }
@@ -24,16 +24,16 @@ export async function getCookie(key: string) {
 /**
  * 求滚动轮滚动距离
  */
-export const getScrollOffset = () => {
+export function getScrollOffset() {
   if (window.pageXOffset) {
     return {
       x: window.pageXOffset,
-      y: window.pageYOffset
+      y: window.pageYOffset,
     }
   } else {
     return {
       x: document.body.scrollLeft + document.documentElement.scrollLeft,
-      y: document.body.scrollTop + document.documentElement.scrollTop
+      y: document.body.scrollTop + document.documentElement.scrollTop,
     }
   }
 }
@@ -42,10 +42,15 @@ export const getScrollOffset = () => {
  * 获取滚动条坐标
  * @param el s
  */
-export const getScrollPosition = (el: any = window) => ({
-  x: el.pageXOffset !== undefined ? el.pageXOffset : el.scrollLeft,
-  y: el.pageYOffset !== undefined ? el.pageYOffset : el.scrollTop
-});
+export function getScrollPosition (el: any = window) {
+  return el.pageXOffset !== void 0 ? {
+    x: el.pageXOffset,
+    y: el.pageYOffset,
+  } : {
+    x: el.scrollLeft,
+    y: el.scrollTop,
+  }
+};
 
 /**
  * 返回浏览器视口尺寸
@@ -54,18 +59,18 @@ export const getViewportOffset = () => {
   if (window.innerWidth) {
     return {
       x: window.innerWidth,
-      y: window.innerHeight
+      y: window.innerHeight,
     }
   } else {
-    if (document.compatMode === "BackCompt") {  // 判断是否为混杂模式
+    if (document.compatMode === "BackCompt") {  // 混杂模式
       return {
         x: document.body.clientWidth,
-        y: document.body.clientHeight
+        y: document.body.clientHeight,
       }
     } else {
       return {
         x: document.documentElement.clientWidth,
-        y: document.documentElement.clientHeight
+        y: document.documentElement.clientHeight,
       }
     }
   }
@@ -73,13 +78,13 @@ export const getViewportOffset = () => {
 
 /**
  * 滚动条、锚链接（记得取消 a 标签默认事件）跳转过渡  默认回到顶部
- * @param ele 元素节点
+ * @param el 元素节点
  */
-export const scrollTo = (ele: any = {}) => {
-  const num = ele.offsetTop || 0;
+export function scrollTo(el: any = {}) {
+  const num = el.offsetTop || 0;
   window.scrollTo({
     top: num,
-    behavior: "smooth"
+    behavior: "smooth",
   });
 }
 
@@ -105,7 +110,7 @@ export function copyToBoard(value: string | number) {
  * 禁止右键复制
  * @param arr contextmenu：选择 selectstart：右键 copy：复制]
  */
-export const prohibitCopy = (arr: string[] = ['selectstart', 'copy']) => {
+export function prohibitCopy(arr: string[] = ['selectstart', 'copy']) {
   arr.forEach((ev: any) => {
     document.addEventListener(ev, (event: any) => {
       return event.returnValue = false;
@@ -116,16 +121,16 @@ export const prohibitCopy = (arr: string[] = ['selectstart', 'copy']) => {
 /**
  * 禁止某些键盘事件
  */
-export const prohibitKeydown = () => {
+export function prohibitKeydown() {
   document.addEventListener('keydown', function (event: any) {
     return !(
-      112 == event.keyCode || //F1
-      123 == event.keyCode || //F12
-      event.ctrlKey && 82 == event.keyCode || //ctrl + R
-      event.ctrlKey && 78 == event.keyCode || //ctrl + N
-      event.shiftKey && 121 == event.keyCode || //shift + F10
-      event.altKey && 115 == event.keyCode || //alt + F4
-      "A" == event.srcElement.tagName && event.shiftKey //shift + 点击a标签
+      112 == event.keyCode ||  // F1
+      123 == event.keyCode ||  // F12
+      event.ctrlKey && 82 == event.keyCode ||  // ctrl + R
+      event.ctrlKey && 78 == event.keyCode ||  // ctrl + N
+      event.shiftKey && 121 == event.keyCode ||  // shift + F10
+      event.altKey && 115 == event.keyCode ||  // alt + F4
+      "A" == event.srcElement.tagName && event.shiftKey  // shift + 点击a标签
     ) || (event.returnValue = false)
   });
 }
@@ -153,7 +158,9 @@ window.onunhandledrejection = (e) => {
 /**
  * 检查当前浏览器是否在苹果设备上
  */
-export const isAppleDevice = /Mac|iPod|iPhone|iPad/.test(navigator.platform);
+export function isAppleDevice() {
+  return /Mac|iPod|iPhone|iPad/.test(navigator.platform);
+}
 
 /**
  * 判断浏览器类型

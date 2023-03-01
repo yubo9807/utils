@@ -5,7 +5,8 @@ export type Type = 'string'    | 'number'  | 'boolean' |
                    'array'     | 'object'  |
                    'function'  | 'promise' |
                    'set'       | 'map'     |
-                   'weakset'   | 'weakmap' | 'weakref'
+                   'weakset'   | 'weakmap' | 'weakref' |
+                   'regexp'
 
 /**
  * 判断数据是什么类型
@@ -23,4 +24,13 @@ export function isType(o: any): Type {
  */
 export function isAsync(func: Function): boolean {
   return func[Symbol.toStringTag] === 'AsyncFunction';
+}
+
+/**
+ * 是否属于一个 Promise 对象
+ * @param result 
+ * @returns 
+ */
+export function isPromise(result: any): boolean {
+  return typeof result === 'object' && result[Symbol.toStringTag] === 'Promise';
 }

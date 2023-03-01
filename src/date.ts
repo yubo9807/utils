@@ -18,7 +18,7 @@ export function timeFromDate(date: Date = new Date()) {
 	return date.toTimeString().slice(0, 8);
 }
 /**
- * 获取当前时间
+ * 获取当前时间，返回一个对象
  * @param t 
  */
 export function getCurrentDate(t: WideDate) {
@@ -103,4 +103,12 @@ export function getTimeDistance(diff = 0, obj = intiailObj) {
 		if (remain > 0) getTimeDistance(remain, obj);
 	}
 	return obj;
+}
+
+/**
+ * 获取当天 0 点的时间戳
+ * @param t
+ */
+export function getNowDayZeroTimestamp(t: Date = new Date()) {
+  return new Date(t.toDateString()).getTime();
 }
