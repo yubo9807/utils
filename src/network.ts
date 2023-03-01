@@ -151,25 +151,27 @@ export class ProcessTasks {
     this.#i ++;
     if (isPromise(result)) {
       return await result.then(async res => {
-        results.push(res);
-        if (this.#tasks.length > len) {
-          this.isRuning = true;  // 发现中途有队列推送，继续递归执行
-          return await this.#execute(results);
-        }
-        if (!this.isRuning) {
-          return Promise.resolve(results);
-        } else {
-          return await this.#execute(results);
-        }
+        return await handleResult.call(this, res);
       }).catch(err => {
         this.isRuning = false;
         return Promise.reject(err);
       });
     } else {
-      results.push(result);
-      if (!this.isRuning) return Promise.resolve(results);
+      return await handleResult.call(this, result);
     }
-    
+
+    async function handleResult(res) {
+      results.push(res);
+      if (this.#tasks.length > len) {
+        this.isRuning = true;  // 发现中途有队列推送，继续递归执行
+        return await this.#execute(results);
+      }
+      if (!this.isRuning) {
+        return Promise.resolve(results);
+      } else {
+        return await this.#execute(results);
+      }
+    }
   }
 
   /**
