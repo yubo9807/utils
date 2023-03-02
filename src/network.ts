@@ -107,9 +107,14 @@ export function fetchTimeout(time: number) {
 type PromiseFn = (...args: any[]) => Promise<any>
 
 export class ProcessTasks {
-  isRuning = false;  // 是否在运行中
-  #tasks   = null;   // 任务队列
-  #i       = 0;      // 执行队列下标
+
+  START_FAILURE = Symbol('startFailure');  // 任务队列被提前回收，启动失败
+  ILLEGAL_CALL  = Symbol('illegalCall');   // 非法调用，任务队列正在执行中
+
+  #isRuning  = false;  // 队列正在执行中
+  #isExecute = false;  // 是否执行队列
+  #tasks     = null;   // 任务队列
+  #i         = 0;      // 执行队列下标
 
   /**
    * 执行任务队列
@@ -126,15 +131,21 @@ export class ProcessTasks {
    * 开始/继续 执行任务
    * @returns 暂停～开始～暂停/结束 的每项任务的返回结果
    */
-  start = () => {
+  start = async () => {
     if (this.#tasks === null) {
-      console.warn('执行队列被提前回收');
-      return;
+      console.error('任务队列被提前回收，启动失败');
+      return Promise.reject(this.START_FAILURE);
     }
-    this.isRuning = true;
-    return new Promise(async (resolve, reject) => {
-      await this.#execute().then(res => resolve(res));
-    });
+    if (this.#isRuning) {
+      console.warn('非法调用！任务队列正在执行中，无法重复执行');
+      return Promise.reject(this.ILLEGAL_CALL);
+    }
+
+    this.#isRuning  = true;
+    this.#isExecute = true;
+    const promise   = await this.#execute();
+    this.#isRuning  = false;
+    return promise;
   }
 
   /**
@@ -143,9 +154,9 @@ export class ProcessTasks {
    * @returns 
    */
   #execute = async (results = []) => {
-    if (!this.isRuning) return;  // 被暂停，结束循环
+    if (!this.#isExecute) return;
     const len = this.#tasks.length;
-    if (this.#i === len - 1) this.isRuning = false;  // 执行到最后一个任务，暂停任务
+    if (this.#i === len - 1) this.#isExecute = false;  // 执行到最后一个任务，暂停任务
 
     const result = this.#tasks[this.#i]();
     this.#i ++;
@@ -153,7 +164,7 @@ export class ProcessTasks {
       return await result.then(async res => {
         return await handleResult.call(this, res);
       }).catch(err => {
-        this.isRuning = false;
+        this.#isExecute = false;
         return Promise.reject(err);
       });
     } else {
@@ -163,10 +174,10 @@ export class ProcessTasks {
     async function handleResult(res) {
       results.push(res);
       if (this.#tasks.length > len) {
-        this.isRuning = true;  // 发现中途有队列推送，继续递归执行
+        this.#isExecute = true;  // 发现中途有队列推送，继续递归执行
         return await this.#execute(results);
       }
-      if (!this.isRuning) {
+      if (!this.#isExecute) {
         return Promise.resolve(results);
       } else {
         return await this.#execute(results);
@@ -178,7 +189,14 @@ export class ProcessTasks {
    * 暂停 任务执行
    */
   pause = () => {
-    this.isRuning = false;
+    this.#isExecute = false;
+  }
+
+  /**
+   * 任务队列是否正在执行中
+   */
+  get isRuning() {
+    return this.#isRuning;
   }
 
   /**
@@ -186,14 +204,14 @@ export class ProcessTasks {
    * @param fn 
    */
   push = (fn: PromiseFn | Function) => {
-    this.#tasks.push(fn);
+    this.#tasks && this.#tasks.push(fn);
   }
 
   /**
    * 使用结束后，将任务队列从内存中回收
    */
   recycle = () => {
-    if (this.isRuning) {
+    if (this.#isExecute || this.#isRuning) {
       console.warn('队列正在执行中，禁止回收');
       return;
     };
