@@ -108,8 +108,9 @@ type PromiseFn = (...args: any[]) => Promise<any>
 
 export class ProcessTasks {
 
-  START_FAILURE = Symbol('startFailure');  // 任务队列被提前回收，启动失败
-  ILLEGAL_CALL  = Symbol('illegalCall');   // 非法调用，任务队列正在执行中
+  readonly START_FAILURE = Symbol('startFailure');  // 任务队列被提前回收，启动失败
+  readonly ILLEGAL_CALL  = Symbol('illegalCall');   // 非法调用，任务队列正在执行中
+  readonly NOT_TASK      = Symbol('notTask');       // 没有任务可执行
 
   #isRuning  = false;  // 队列正在执行中
   #isExecute = false;  // 是否执行队列
@@ -123,15 +124,16 @@ export class ProcessTasks {
    * 若在整个执行结束后追加了任务，请重新执行 start
    * @param tasks ...args 任务队列
    */
-  constructor(...tasks: Array<PromiseFn | Function>) {
+  constructor(tasks: Array<PromiseFn | Function>) {
     this.#tasks = tasks;
   }
 
   /**
    * 开始/继续 执行任务
+   * @param i 指定执行任务队列的下标
    * @returns 暂停～开始～暂停/结束 的每项任务的返回结果
    */
-  start = async () => {
+  start = async (i: number = null) => {
     if (this.#tasks === null) {
       console.error('任务队列被提前回收，启动失败');
       return Promise.reject(this.START_FAILURE);
@@ -140,6 +142,15 @@ export class ProcessTasks {
       console.warn('非法调用！任务队列正在执行中，无法重复执行');
       return Promise.reject(this.ILLEGAL_CALL);
     }
+
+    // 超出执行队列长度
+    if (this.#i > this.#tasks.length - 1) {
+      console.warn('没有任务可以继续执行');
+      return Promise.resolve(this.NOT_TASK);
+    }
+
+    // 执行队列的下标被指定，从指定的任务开始执行
+    if (typeof i === 'number') this.#i = i;
 
     this.#isRuning  = true;
     this.#isExecute = true;
@@ -187,9 +198,11 @@ export class ProcessTasks {
 
   /**
    * 暂停 任务执行
+   * @returns 当前暂停的任务下标
    */
   pause = () => {
     this.#isExecute = false;
+    return this.#i - 1;
   }
 
   /**
