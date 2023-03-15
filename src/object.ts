@@ -99,24 +99,49 @@ export function getValue(obj: any, name: string) {
 
 /**
  * 设置对象 value 值
- * @param obj  PS: {a: 1, b: {c: 3}}
- * @param data 要改变的 key 值  PS: a 或 b.c
+ * @param obj  PS: {}
+ * @param propPath 要改变的 key 值  PS: a 或 b.c
  * @param value 设置 value
  */
-export function setValue(obj: AnyObj, data: string, value: any) {
-	if (!obj) return;
-	let attrList = data.split('.');
-	let temp = obj;
-	for (let i = 0; i < attrList.length - 1; i++) {
-		if (temp[attrList[i]]) {
-			temp = temp[attrList[i]];
-		} else {
-			return;
+export function setNestedPropertyValue(obj: AnyObj, propPath: string | string[], value: any) {
+  if (typeof propPath === 'string') {
+    propPath = propPath.split('.');
+  }
+
+  if (propPath.length > 1) {
+    const prop = propPath.shift();
+    obj[prop] = obj[prop] || {};
+    setNestedPropertyValue(obj[prop], propPath, value);
+  } else {
+    obj[propPath[0]] = value;
+  }
+}
+
+/**
+ * 创建一个可连续赋值的对象
+ * @returns 
+ * @call const obj = createAnyObject(); obj.a.b.c = 123
+ */
+export function createAnyObject(target = {}) {
+  let nowKey = '';
+  return new Proxy(clone(target), {
+		get(target, key, receiver) {
+			if (typeof key !== 'string') {
+				throw new TypeError('key 类型错误');
+			}
+			nowKey += '.' + key;
+			setNestedPropertyValue(target, nowKey.slice(1), {});
+			return receiver;
+		},
+		set(target, key, value, receiver) {
+			if (typeof key !== 'string') {
+				throw new TypeError('key 类型错误');
+			}
+			nowKey += '.' + key;
+			setNestedPropertyValue(target, nowKey.slice(1), value);
+			return receiver;
 		}
-	}
-	if (temp[attrList[attrList.length - 1]] != null) {
-		temp[attrList[attrList.length - 1]] = value;
-	}
+	})
 }
 
 /**
