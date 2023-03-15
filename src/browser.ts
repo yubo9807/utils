@@ -135,25 +135,6 @@ export function prohibitKeydown() {
   });
 }
 
-// 采集JS Error
-window.onerror = (errorMsg, url, lineNumber, columnNumber, errorObj) => {
-  let errorStack = errorObj ? errorObj.stack : null;
-  // 这里进行上报
-  console.log(errorMsg, url, lineNumber, columnNumber, errorStack)
-};
-
-window.onunhandledrejection = (e) => {
-  let errorMsg = "", errorStack = "";
-  if (typeof e.reason === "object") {
-    errorMsg = e.reason.message;
-    errorStack = e.reason.stack;
-  } else {
-    errorMsg = e.reason;
-  }
-  // 这里进行上报
-  console.log(errorMsg, errorStack)
-}
-
 
 /**
  * 检查当前浏览器是否在苹果设备上
@@ -198,3 +179,21 @@ export function createFormData(obj) {
   }
   return formData
 }
+
+
+// 资源请求错误，更换地址重试
+// let count = 0;
+// window.addEventListener('error', (e) => {
+//   const tag = e.target;
+//   if (tag.nodeName === 'SCRIPT' && !(e instanceof ErrorEvent)) {
+//     if (count > 2) return;
+//     const url = new URL(tag.src);
+//     url.host = 'hpyyb.cn';
+//     url.port = '80';
+//     const script = document.createElement('script');
+//     script.src = url;
+//     document.write(`<script src="${url.toString()}">\<\/script>`);
+//     // document.head.insertBefore(script, tag);
+//     count++;
+//   }
+// }, true)
