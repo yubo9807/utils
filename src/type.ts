@@ -18,3 +18,8 @@ export type AnyObj = {
 export type OptionalObj<T> = {
   [prop in keyof T]?: T[prop]
 }
+
+/**
+ * 异步函数
+ */
+export type PromiseFn = (...args: any[]) => Promise<any>
