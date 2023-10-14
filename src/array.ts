@@ -181,3 +181,29 @@ export function permute(arr: any[]) {
   go([]);
   return results;
 }
+
+/**
+ * 获取两个颜色的中间色（rgba 不在考虑范围内）
+ * @param startColor 开始颜色 (长度为3的数组)
+ * @param endColor   结束颜色 (长度为3的数组)
+ * @param num        需要多少个
+ * @returns rgb list
+ */
+export function getMiddleColorList(startColor: number[], endColor: number[], num: number): number[][] {
+
+  const rStep = (endColor[0] - startColor[0]) / num;
+  const gStep = (endColor[1] - startColor[1]) / num;
+  const bStep = (endColor[2] - startColor[2]) / num;
+
+  const gradientColorArr = [];
+
+  for (let i = 0; i < num; i++) {
+    gradientColorArr.push([
+      Math.round(startColor[0] + i * rStep),
+      Math.round(startColor[1] + i * gStep),
+      Math.round(startColor[2] + i * bStep)
+    ])
+  }
+
+  return gradientColorArr;
+}

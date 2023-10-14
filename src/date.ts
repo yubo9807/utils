@@ -22,7 +22,7 @@ export function timeFromDate(date: Date = new Date()) {
  * @param t 
  */
 export function getCurrentDate(t: WideDate) {
-	let date = t ? new Date(t) : new Date();
+	let date = t || t === 0 ? new Date(t) : new Date();
 	return {
 		year: date.getFullYear() + '',
 		month: date.getMonth() + 1,
@@ -50,7 +50,7 @@ export function dateFormater(t: WideDate = new Date(), formater: string = 'YYYY-
 		.replace(/ss/g, (second < 10 ? '0' : '') + second);
 }
 
-const addZero = (v: string | number) => v < 10 ? '0' + v : v;
+const addZero = (v: number) => v < 10 ? '0' + v : v;
 
 /**
  * 格林时间转为北京时间

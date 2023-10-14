@@ -1,4 +1,4 @@
-import { OptionalObj } from "./type";
+import { OptionalDeep } from "./type";
 
 /**
  * File 转 base64
@@ -32,6 +32,25 @@ export function base64toFile(base64: string, fileName = 'filename', fileType = '
 }
 
 
+/**
+ * base64 转 url
+ * @param {*} base64String
+ * @returns
+ */
+export function base64ToUrl(base64String: string) {
+  const binaryData = atob(base64String);
+
+  // 创建一个Uint8Array来存储二进制数据
+  const uint8Array = new Uint8Array(binaryData.length);
+  for (let i = 0; i < binaryData.length; i++) {
+    uint8Array[i] = binaryData.charCodeAt(i);
+  }
+
+  const blob = new Blob([uint8Array]);
+  return URL.createObjectURL(blob);
+}
+
+
 
 const initialOption = {
   ratio: .8,  // 压缩比例
@@ -48,7 +67,7 @@ const initialOption = {
  * @param option 
  * @returns 
  */
-export async function imageCompress(base64: string, option: OptionalObj<typeof initialOption> = {}) {
+export async function imageCompress(base64: string, option: OptionalDeep<typeof initialOption> = {}) {
   const format = base64.match(/image\/.+;/)[0].slice(6, -1).toLocaleLowerCase();
   option = Object.assign({}, initialOption, option);
   console.log(option)

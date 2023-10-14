@@ -63,19 +63,14 @@ export function* createNum() {
 }
 
 /**
- * 浮点数数字求和，解决(0.1 + 0.2 != 0.3)的问题
- * @param args 
+ * 将 rgb 颜色灰度化（基于光感加权平均）
+ * @param r 
+ * @param g 
+ * @param b 
  * @returns 
  */
-export function fixedNumberAdd(...args: number[]) {
-  let intSum = 0, floatSum = 0;
-  [...args].forEach((val: number) => {
-    const int = String(val).split('.')[0];  // 整数部位
-    const float = String(val).split('.')[1] ?? 0;  // 小数部位
-    intSum += Number(int);
-    floatSum += Number(float);
-  });
-  return Number(intSum + '.' + floatSum);
+export function grayColor(r: number, g: number, b: number) {
+  return .2126 * r + .7152 * g + .0722 * b;
 }
 
 /**
@@ -216,4 +211,20 @@ export function pointDegree(x: number, y: number) {
   } else {
     return Math.abs(Math.atan2(y, -x) * 180 / Math.PI) + 180;
   }
+}
+
+/**
+ * 计算字节大小
+ * @param {*} num
+ * @param {*} utils
+ * @returns
+ */
+export function calculateByte(num = 0, utils = ['B', 'KB', 'MB', 'GB', 'TB']) {
+  const len = utils.length;
+  let str = '';
+  if (num < 1024) str = num + utils[0];
+  for (let i = 1; i < len; i++) {
+    if (num > 1024 ** i) str = Math.ceil(num / (1024 ** i)) + utils[i];
+  }
+  return str;
 }

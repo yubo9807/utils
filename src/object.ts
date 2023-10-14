@@ -1,3 +1,4 @@
+import { isType } from "./judge";
 import { AnyObj } from "./type";
 
 declare const FormData: any;
@@ -7,7 +8,7 @@ declare const FormData: any;
  * @param target 
  * @returns 
  */
-export function deepClone(target: AnyObj) {
+export function deepClone2<T>(target: T): Promise<T> {
 	return new Promise(resolve => {
 		const { port1, port2 } = new MessageChannel();
 		port1.postMessage(target);
@@ -17,64 +18,93 @@ export function deepClone(target: AnyObj) {
 	})
 }
 
-/**
- * 浅层克隆
- * @param origin 被克隆对象
- * @param target 克隆对象
- */
-export function mappingObj(origin: AnyObj, target: AnyObj = {}) {
-	for (const prop in origin) {
-		target[prop] = origin[prop];
-	}
-	return target;
-}
-
-/**
- * 深度克隆
- * @param origin 被克隆对象
- * @param target 克隆对象
- */
-export function deepCloneObj(origin: AnyObj, target: AnyObj = {}) {
-	const toStr = Object.prototype.toString;
-	for (const prop in origin) {
-		if (origin.hasOwnProperty(prop)) {  // 查看自身属性是否存在
-			// 判断是数组还是对象
-			if (origin[prop] !== null && typeof (origin[prop]) === 'object') {
-				target[prop] = toStr.call(origin[prop]) == '[object Array]' ? [] : {};
-				deepCloneObj(origin[prop], target[prop]);  // 重新克隆子级
-			} else {
-				target[prop] = origin[prop];
+export const deepClone = (function () {
+	const cache = new WeakMap();
+	const noCloneTypes = ['null', 'weakset', 'weakmap'];
+	
+	const specialClone = {
+		set(set: Set<any>) {
+			const collect = new Set();
+			for (const value of set) {
+				collect.add(deepClone(value));
 			}
-		}
+			return collect;
+		},
+		map(map: Map<any, any>) {
+			const collect = new Map();
+			for (const [ key, val ] of map.entries()) {
+				collect.set(key, deepClone(val));
+			}
+			return collect;
+		},
+		arraybuffer(array: ArrayBuffer) {
+			return array.slice(0);
+		},
+		int32array(buffer: Int32Array) {
+			return buffer.slice(0);
+		},
 	}
-	return target;
-}
+
+	/**
+	 * 深度克隆
+	 * @param origin 被克隆对象
+	 */
+	return function<T>(origin: T) {
+		const type = isType(origin);
+		if (typeof origin !== 'object' || noCloneTypes.includes(type)) {
+			return origin;
+		}
+
+		// 防止环形引用问题（已经克隆过的对象不再进行克隆）
+		if (cache.has(origin)) {
+			return cache.get(origin);
+		}
+
+		// 特殊类型克隆处理
+		if (specialClone[type]) {
+			return specialClone[type](origin);
+		}
+
+		// 创建一个新的对象
+		const target: AnyObj = Array.isArray(origin) ? [] : {};
+		Object.setPrototypeOf(target, Object.getPrototypeOf(origin));
+
+		// 设置缓存，该对象已经被克隆过
+		cache.set(origin, target);
+
+		for (const key in origin) {
+			target[key] = deepClone(origin[key]);
+		}
+		return target as T;
+	}
+}())
+
 
 /**
  * 深度克隆对象
  * JSON.parse(JSON.stringify(obj))  // 此方法无法合并代理对象
  * @param obj 
  */
-export function clone(obj: any) {
+export function clone<T>(obj: T): T {
 	// 克隆算法
 	if (obj instanceof Array) return cloneArray(obj);
 	else if (obj instanceof Object) return cloneObject(obj);
 	else return obj;
 }
-function cloneObject(obj: any) {
+function cloneObject<T>(obj: T): T {
 	let result = {};
 	let names = Object.getOwnPropertyNames(obj);
 	for (let i = 0; i < names.length; i++) {
 		result[names[i]] = clone(obj[names[i]]);
 	}
-	return result;
+	return result as T;
 }
-function cloneArray(obj: any) {
+function cloneArray<T extends any[]>(obj: T): T {
 	let result = new Array(obj.length);
 	for (let i = 0; i < result.length; i++) {
 		result[i] = clone(obj[i]);
 	}
-	return result;
+	return result as T;
 }
 
 /**
@@ -91,7 +121,7 @@ export function getValue(obj: any, name: string) {
 		if (temp[nameList[i]]) {
 			temp = temp[nameList[i]];
 		} else {
-			return undefined;
+			return void 0;
 		}
 	}
 	return temp;

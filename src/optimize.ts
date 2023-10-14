@@ -80,9 +80,9 @@ export function delay(time = 1000) {
  * @param wait 
  * @returns 
  */
-export const throttle = (handler: () => void, wait: number) => {
+export function throttle<A extends any[], R>(handler: (...args: A) => R, wait: number) {
 	let lastTime = 0;
-	return function (...args: any[]) {
+	return function (...args: A) {
 		let nowTime = new Date().getTime();
 		if (nowTime - lastTime > wait) {
 			handler.apply(this, ...args);
@@ -97,9 +97,9 @@ export const throttle = (handler: () => void, wait: number) => {
  * @param delay 
  * @returns 
  */
-export function debounce(handler: () => void, delay: number) {
+export function debounce<A extends any[], R>(handler: (...args: A) => R, delay: number) {
 	let timer = null;
-	return function (...args: any[]) {
+	return function (...args: A) {
 		let _self = this;
 		clearTimeout(timer);
 		timer = setTimeout(function () {

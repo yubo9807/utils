@@ -1,4 +1,66 @@
 /**
+ * 获取字符串码点长度
+ * @param str 
+ * @returns 
+ */
+export function pointLength(str: string) {
+  let len = 0;
+  for (let i = 0; i < str.length;) {
+    len++;
+    const point = str.codePointAt(i);
+    i += point > 0xffff ? 2 : 1;
+  }
+  return len;
+}
+
+/**
+ * 按码点获取字符串某一位
+ * @param str 
+ * @param index 
+ * @returns 
+ */
+export function pointAt(str: string, index: number) {
+  let curIndex = 0;
+  for (let i = 0; i < str.length;) {
+    if (curIndex === index) {
+      const point = str.codePointAt(i);
+      return String.fromCodePoint(point);
+    }
+    curIndex++;
+    const point = str.codePointAt(i);
+    i += point > 0xffff ? 2 : 1;
+  }
+}
+
+/**
+ * 按码点截取字符串
+ * @param str 
+ * @param start 
+ * @param end 
+ * @returns 
+ */
+export function pointSlice(str: string, start: number, end?: number) {
+  end ??= pointLength(str);
+  let result = '';
+  const len = pointLength(str);
+  for (let i = start; i < len && i < end; i++) {
+    result += pointAt(str, i);
+  }
+  return result;
+}
+
+/**
+ * 获取 url query
+ * @param url 
+ * @returns 
+ */
+export function parseQuery(url: string) {
+	const query = {};
+	url.replace(/([^?&=]+)=([^&]+)/g, (_, k, v) => (query[k] = v));
+	return query;
+}
+
+/**
  * 生成重复字符串
  * @param str 传入字符串
  * @param n 重复次数
@@ -160,87 +222,45 @@ export function digitUppercase(num: string = '') {
  * @param html
  * @returns 返回 AST 语法树
  */
-export function parseHtml(html: string = '') {
-	const startTagOpen = /^<([a-zA-Z\d]+)/;  // 匹配标签<div>、<br/>等标签的开始部分"<div、<br"
-	const startTagClose = /^\s*(\/?)>/;  // 匹配标签<div>、<br/>等标签的闭合部分">、/>"
-	const attribute = /^\s*([\w-]+)(?:="([^"]*)")?\s*/;  // 匹配属性
-	const endTag = /^<\/([a-zA-Z\d]+)>/;  // 匹配闭合标签，例如</div>、</p>
+export function stringToVirtualDOM(html: string = '') {
+	// 创建一个虚拟 DOM 对象
+	const virtualDOM: any = {};
 
-	const stack: any = [];
-	const nodes: any = [];
+	// 解析标签名称
+	const tagRegExp = /<([a-z]+)\s*[^>]*>/;
+	const match = html.match(tagRegExp);
+	if (match) {
+		virtualDOM.tag = match[1];
+	}
 
-	while (html) {
-		// 查找<的起始位置
-		const index = html.indexOf('<');
-		if (index === 0) {
-			// 先匹配整体结束标签，例如</div>、</p>
-			let endTagMatch = html.match(endTag);
-			if (endTagMatch) {
-				if (stack[stack.length - 1]) {
-					if (stack[stack.length - 1].tag === endTagMatch[1]) {
-						// 出栈
-						stack.pop();
-						advanced(endTagMatch[0].length);
-						continue;
-					} else {
-						throw new Error(`起始标签和结束标签不匹配: 起始标签（${stack[stack.length - 1].tag}），结束标签（${endTagMatch[0]}）`);
-					}
+	// 解析属性
+	const attrRegExp = /\s*([^=\s]+)\s*=\s*['"]?([^'"\s]+)['"]?/g;
+	let attrMatch;
+	const attrs = {};
+	while ((attrMatch = attrRegExp.exec(html))) {
+		attrs[attrMatch[1]] = attrMatch[2];
+	}
+	virtualDOM.attrs = attrs;
+
+	// 解析子节点
+	const childrenRegExp = />(.*)<\/[a-z]+>/s;
+	const childrenMatch = html.match(childrenRegExp);
+	if (childrenMatch) {
+		const childrenStr = childrenMatch[1].trim();
+		if (childrenStr.length > 0) {
+			virtualDOM.children = childrenStr.split('\n').map((childStr) => {
+				if (tagRegExp.test(childStr)) {
+					return stringToVirtualDOM(childStr);
 				} else {
-					throw new Error(`${endTagMatch[0]}没有起始标签`);
+					return childStr;
 				}
-			}
-
-			// 然后匹配起始标签的开始部分，例如<div>的<div、<p>的<p、<br/>的<br
-			let startTagOpenMatch = html.match(startTagOpen);
-			if (startTagOpenMatch) {
-				const node: any = {
-					nodeType: 1,
-					tag: startTagOpenMatch[1],
-					attrs: [],
-					children: [],
-				};
-				advanced(startTagOpenMatch[0].length);
-				let end: (string | any[])[] | null, attr: any[] | null;
-				// 匹配标签属性列表
-				while (!(end = html.match(startTagClose)) && (attr = html.match(attribute))) {
-					advanced(attr[0].length);
-					node.attrs.push({
-						name: attr[1],
-						value: attr[2],
-					});
-				}
-
-				// 匹配起始标签的结束部分
-				if (end) {
-					if (stack.length === 0) nodes.push(node);
-					else stack[stack.length - 1].children.push(node);
-
-					// 自闭和标签不加入栈中
-					if (end[1] !== '/') stack.push(node);
-
-					advanced(end[0].length);
-				}
-			}
-		} else {
-			// 文本
-			const node = {
-				nodeType: 3,
-				textContent: html.slice(0, index)
-			};
-
-			if (stack.length === 0) nodes.push(node);
-			else stack[stack.length - 1].children.push(node);
-
-			advanced(node.textContent.length);
+			});
 		}
 	}
 
-	function advanced(n: number) {
-		html = html.substring(n);
-	}
-	return nodes;
+	return virtualDOM;
 }
-// parseHtml('<div id="test" class="a b"></div>');
+
 
 /**
  * 生成随机id
